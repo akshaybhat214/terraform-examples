@@ -32,3 +32,7 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
     Environment = var.environment
   }
 }
+
+output "table_name" {
+  value = "${aws_dynamodb_table.basic-dynamodb-table.name}"
+}

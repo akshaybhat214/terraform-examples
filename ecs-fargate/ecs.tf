@@ -4,6 +4,7 @@ resource "aws_ecs_cluster" "dummy-cluster" {
     name = "containerInsights"
     value = "enabled"
   }
+
   tags = {
     Product = "${var.product}"
     Env     = "${var.environment}"
@@ -18,9 +19,14 @@ resource "aws_ecs_task_definition" "app" {
   cpu                      = "${var.fargate_cpu}"
   memory                   = "${var.fargate_memory}"
   container_definitions    = "${data.template_file.dummy_app.rendered}"
+
+  tags = {
+    Product = "${var.product}"
+    Env     = "${var.environment}"
+  }
 }
 
-resource "aws_ecs_service" "main" {
+resource "aws_ecs_service" "main-service" {
   name            = "dummy-ecs-service-${var.environment}"
   cluster         = "${aws_ecs_cluster.dummy-cluster.id}"
   task_definition = "${aws_ecs_task_definition.app.arn}"
@@ -30,6 +36,11 @@ resource "aws_ecs_service" "main" {
   network_configuration {
     assign_public_ip = true
     subnets = ["${var.subnet_1}","${var.subnet_2}"]
+  }
+
+  tags = {
+    Product = "${var.product}"
+    Env     = "${var.environment}"
   }
 }
 
